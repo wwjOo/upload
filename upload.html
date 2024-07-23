@@ -1,0 +1,110 @@
+<!DOCTYPE html> 
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件上传表单</title>
+    <style>
+        .default-text {
+            color: #6b93ff;
+        }
+        #inputText {
+            width: 245px;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file">
+        <input type="submit" value="上传文件" onclick="uploadFile(event)">
+        <br>
+        <label for="inputText">存储路径:</label>
+        <input type="text" id="inputText" name="userInput" value="http://124.223.4.37/files/" required class="default-text">
+
+        <br>
+        <progress id="progressBar" value="0" max="100"></progress>
+        <div id="status"></div>
+    </form>
+
+    <!-- 处理路径输入 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var inputText = document.getElementById('inputText');
+            
+            // 监听输入事件，防止删除默认值
+            inputText.addEventListener('input', function(event) {
+                var currentValue = inputText.value;
+                var defaultValue = "http://124.223.4.37/files/";
+                
+                // 如果当前值不以默认值开头，或当前值长度小于默认值长度，则重置为默认值
+                if (!currentValue.startsWith(defaultValue) || currentValue.length < defaultValue.length) {
+                    inputText.value = defaultValue;
+                }
+            });
+        });
+    </script>
+
+    <!-- 处理上传 -->
+    <script>
+        function uploadFile(event) 
+        {
+            // 阻止默认提交行为
+            event.preventDefault(); 
+
+            var fileInput = document.getElementById('file');
+            var pathInput = document.getElementById('inputText').value;
+            
+            // 检查用户是否选择了文件
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) 
+            {
+                alert('请先选择一个文件！');
+            }
+            else
+            {
+                // 弹出对话框要求用户输入密码
+                var password = prompt("文件将上传至: " + pathInput + "\n请输入密码:");
+                // 如果密码不为空，继续提交表单
+                if (password !== null && password !== "") 
+                {
+                    // 将密码设置到隐藏的密码输入框
+                    var hiddenPasswordInput = document.createElement("input");
+                    hiddenPasswordInput.type = "hidden";
+                    hiddenPasswordInput.name = "password";
+                    hiddenPasswordInput.value = password;
+                    
+                    // 提交表单
+                    document.getElementById("uploadForm").appendChild(hiddenPasswordInput);
+                    document.getElementById("uploadForm").submit();
+
+                    //显示上传进度
+                    var formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    formData.append('password', password);
+
+                    var progressBar = document.getElementById('progressBar');
+                    var status = document.getElementById('status');
+                    var xhr = new XMLHttpRequest();
+
+                    xhr.upload.addEventListener("progress", function(e) {
+                        var percent = (e.loaded / e.total) * 100;
+                        progressBar.value = percent;
+                        status.innerHTML = '上传进度：' + Math.round(percent) + '%';
+                    });
+
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            status.innerHTML = '上传完成！';
+                        } else {
+                            status.innerHTML = '上传出错，请重试。';
+                        }
+                    };
+
+                    xhr.open("POST", "upload.php");
+                    xhr.send(formData);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
