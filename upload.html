@@ -11,6 +11,14 @@
         #inputText {
             width: 245px;
         }
+        #progressBar {
+            height: 40px; /* 进度条高度 */
+        }
+
+        #status {
+            font-size: 14px;
+            color: #d050d4; /* 设置字体颜色为白色 */
+        }
     </style>
 </head>
 
@@ -87,10 +95,40 @@
                     var xhr = new XMLHttpRequest();
 
                     xhr.upload.addEventListener("progress", function(e) {
-                        var percent = (e.loaded / e.total) * 100;
+                        var currentTime = new Date().getTime();
+                        var timeElapsed = (currentTime - startTime) / 1000; // 转换为秒
+                        var uploadSpeed = e.loaded / timeElapsed;           // 计算速率，单位为字节/秒
+                        var percent = (e.loaded / e.total) * 100;           // 上传百分比
+                        var speedInKBps = uploadSpeed / 1024;               // 转换为 KB/秒
+
                         progressBar.value = percent;
-                        status.innerHTML = '上传进度：' + Math.round(percent) + '%';
+                        status.innerHTML = '上传进度：' + percent.toFixed(1) + '%';
+
+                        if(speedInKBps >= 1024){
+                            speedInKBps = uploadSpeed / (1024*1024);
+                            status.innerHTML += '<br>速率: ' + speedInKBps.toFixed(3) + ' MB/s';
+                        }
+                        else{
+                            status.innerHTML += '<br>速率: ' + speedInKBps.toFixed(3) + ' KB/s';
+                        }
+
+                        // 根据文件大小动态显示已上传大小和总大小
+                        var uploadedSize = formatBytes(e.loaded);
+                        var totalSize = formatBytes(e.total);
+                        status.innerHTML += '<br>已传/总量: ' + uploadedSize + ' / ' + totalSize;
                     });
+
+                    // 辅助函数，将字节数转换为更友好的格式（KB、MB、GB）
+                    function formatBytes(bytes, decimals = 2) {
+                        if (bytes === 0) return '0 Bytes';
+                        const k = 1024;
+                        const dm = decimals < 0 ? 0 : decimals;
+                        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+                        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+                        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+                    }
 
                     xhr.onload = function() {
                         if (xhr.status === 200) {
@@ -100,6 +138,7 @@
                         }
                     };
 
+                    var startTime = new Date().getTime(); // 记录开始时间
                     xhr.open("POST", "upload.php");
                     xhr.send(formData);
                 }

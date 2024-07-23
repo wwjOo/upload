@@ -106,7 +106,7 @@ function HandleUpload($publicUserPassword,$supperUserPassword,$defalutDir)
     $targetFile = $targetDir . basename($_FILES['file']['name']);
     if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) 
     {
-        echo "<h2>上传成功!</h2>";
+        echo "<h2>上传成功!</h2><h4>(5s后将自动跳转至上传的文件处)</h4>";
 
         echo date('Y-m-d  H:i:s') . "<br>";
         echo "上传文件名: " . $_FILES["file"]["name"] . "<br>";
