@@ -1,38 +1,111 @@
-<!DOCTYPE html> 
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文件上传表单</title>
     <style>
+        .file-input-container {
+            width: 300px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 12px 16px rgb(177, 180, 182);
+            transition: box-shadow 1s ease; /* 添加过渡效果 0.3s 调用ease函数执行过渡 */
+            
+            /* 使用 Grid 居中 */
+            display: grid;
+            margin: 0 auto; /* 水平居中 */
+        }
+        /* 悬停效果 */
+        .file-input-container:hover {
+            box-shadow: 0 8px 12px rgb(17, 154, 245);
+        }
+
+        input[type="file"] {
+            border: none;
+            padding: 4px 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background-color: #008CBA;
+        }
+        label {
+            font-family: 'Montserrat', sans-serif; /* 使用Montserrat字体 */
+            font-size: 1.2em; /* 调整字体大小 */
+            line-height: 1.2; /* 调整行高 */
+            color: #333; /* 设定文本颜色 */
+            text-align: center; /* 居中文本 */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* 添加文本阴影效果 */
+            /* 其他样式，如背景色等 */
+            border-radius: 5px; /* 边缘圆角 */
+            background-color: #ffffff;
+        }
+        input[type="submit"] {
+            font-family: 'Montserrat', sans-serif; /* 使用Montserrat字体 */
+            font-size: 1.2em; /* 调整字体大小 */
+            text-shadow: 2px 2px 4px rgba(29, 29, 29, 0.582); /* 添加文本阴影效果 */
+
+            border: none;
+            padding: 2px 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background-color: #008CBA;
+            transition: background-color 5s ease; /* 添加过渡效果 0.3s 调用ease函数执行过渡 */
+        }
+        input[type="submit"]:hover {
+            background-color: #11dd8f;
+        }
+
         .default-text {
-            color: #6b93ff;
+            font-family: 'Montserrat', sans-serif; /* 使用Montserrat字体 */
+            color: hsl(209, 84%, 63%);
+            font-size: 1em; /* 调整字体大小 */
+            width: 300px;
+
+            border-color: #95d3f7; /* 边框颜色变深 */
+            border-radius: 4px;
         }
-        #inputText {
-            width: 245px;
+        /* 悬停效果 */
+        .default-text:hover {
+            border-color: #6ab4f0; /* 边框颜色变深 */
         }
+
+        /* 聚焦效果 */
+        .default-text:focus {
+            outline: none; /* 移除默认的聚焦样式 */
+            border-color: #007bff; /* 修改聚焦时的边框颜色 */
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5); /* 添加聚焦时的阴影效果 */
+        }
+
         #progressBar {
-            height: 40px; /* 进度条高度 */
+            width: 300px; /* 进度条高度 */
         }
 
         #status {
-            font-size: 14px;
+            font-size: 12px;
             color: #d050d4; /* 设置字体颜色为白色 */
         }
     </style>
-</head>
 
-<body>
-    <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" id="file">
-        <input type="submit" value="上传文件" onclick="uploadFile(event)">
-        <br>
-        <label for="inputText">存储路径:</label>
-        <input type="text" id="inputText" name="userInput" value="http://124.223.4.37/files/" required class="default-text">
+    <form id="uploadForm" action="/upload.php" method="post" enctype="multipart/form-data">
+        <hr>
+        <div class="file-input-container">
+            <input type="file" name="file" id="file">
+            <br>
+            <label for="inputText">请输入存储路径:</label>
+            <input type="text" id="inputText" name="userInput" required class="default-text">
+            <script>
+                document.getElementById('inputText').value = window.location.href.replace(/(\?C=[A-Z];O=[A-Z])/, '').replace('http://124.223.4.37', '');
+            </script>
+            <br>
+            <input type="submit" value="点击上传" onclick="uploadFile(event)">
+            <br>        
+            <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
+            <div id="status"></div>
+        </div>
 
-        <br>
-        <progress id="progressBar" value="0" max="100"></progress>
-        <div id="status"></div>
+        <hr>
+        <button type="button" onclick="alert('你点错了!')">点小虫返回首页!</button>
+        <hr>
+        <a id="refresh" href="/">
+            <img src="/R-C.gif" style="max-width: 100%; height: auto;">
+        </a>
     </form>
 
     <!-- 处理路径输入 -->
@@ -43,7 +116,7 @@
             // 监听输入事件，防止删除默认值
             inputText.addEventListener('input', function(event) {
                 var currentValue = inputText.value;
-                var defaultValue = "http://124.223.4.37/files/";
+                var defaultValue = "/";
                 
                 // 如果当前值不以默认值开头，或当前值长度小于默认值长度，则重置为默认值
                 if (!currentValue.startsWith(defaultValue) || currentValue.length < defaultValue.length) {
@@ -57,92 +130,129 @@
     <script>
         function uploadFile(event) 
         {
-            // 阻止默认提交行为
             event.preventDefault(); 
 
-            var fileInput = document.getElementById('file');
-            var pathInput = document.getElementById('inputText').value;
-            
             // 检查用户是否选择了文件
-            if (!fileInput || !fileInput.files || fileInput.files.length === 0) 
-            {
+            var fileInput = document.getElementById('file');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0){
                 alert('请先选择一个文件！');
             }
-            else
-            {
+            else{
                 // 弹出对话框要求用户输入密码
-                var password = prompt("文件将上传至: " + pathInput + "\n请输入密码:");
-                // 如果密码不为空，继续提交表单
-                if (password !== null && password !== "") 
-                {
-                    // 将密码设置到隐藏的密码输入框
-                    var hiddenPasswordInput = document.createElement("input");
-                    hiddenPasswordInput.type = "hidden";
-                    hiddenPasswordInput.name = "password";
-                    hiddenPasswordInput.value = password;
+                var password = prompt("文件将上传至: " + document.getElementById('inputText').value + "\n请输入密码:");
+                if (password !== null && password !== ""){
                     
-                    // 提交表单
-                    document.getElementById("uploadForm").appendChild(hiddenPasswordInput);
-                    document.getElementById("uploadForm").submit();
+                    //校验密码和路径
+                    var formData1 = new FormData();
+                    formData1.append('password', password);            
+                    formData1.append('filepath', document.getElementById('inputText').value);
+                    fetch('/upload.php', {
+                        method: 'POST',
+                        body: formData1
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            //---------------------------------------------------------------------------------
+                            //---------------------------------------------------------------------------------
+                            // 获取所有按钮和文本输入框，文件输入元素，URL
+                            var buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
+                            var links = document.querySelectorAll('a');
 
-                    //显示上传进度
-                    var formData = new FormData();
-                    formData.append('file', fileInput.files[0]);
-                    formData.append('password', password);
+                            // 禁用所有按钮
+                            buttons.forEach(function(button) {
+                                button.disabled = true;
+                            });
+                            // 禁用所有超链接
+                            links.forEach(function(link) {
+                                link.removeAttribute('href'); // 移除 href 属性
+                                link.style.pointerEvents = 'none'; // 禁用点击事件
+                            });
+                            
+                            //显示进度条
+                            document.getElementById('progressBar').style.display = 'block';
+                            var progressBar = document.getElementById('progressBar');
+                            var status = document.getElementById('status');
 
-                    var progressBar = document.getElementById('progressBar');
-                    var status = document.getElementById('status');
-                    var xhr = new XMLHttpRequest();
+                            //传送文件
+                            var formData2 = new FormData();
+                            formData2.append('dir', data.targetDir);
+                            formData2.append('file', fileInput.files[0]);
 
-                    xhr.upload.addEventListener("progress", function(e) {
-                        var currentTime = new Date().getTime();
-                        var timeElapsed = (currentTime - startTime) / 1000; // 转换为秒
-                        var uploadSpeed = e.loaded / timeElapsed;           // 计算速率，单位为字节/秒
-                        var percent = (e.loaded / e.total) * 100;           // 上传百分比
-                        var speedInKBps = uploadSpeed / 1024;               // 转换为 KB/秒
+                            //创建一个对象，用于在后续步骤中发起 HTTP 请求
+                            var xhr = new XMLHttpRequest();
+                            //注册监听 XMLHttpRequest 对象的上传进度事件，定义回调内容
+                            xhr.upload.addEventListener("progress", function(e) {
+                                var currentTime = new Date().getTime();
+                                var timeElapsed = (currentTime - startTime) / 1000; // 转换为秒
+                                var uploadSpeed = e.loaded / timeElapsed;           // 计算速率，单位为字节/秒
+                                var percent = (e.loaded / e.total) * 100;           // 上传百分比
+                                var speedInKBps = uploadSpeed / 1024;               // 转换为 KB/秒
+                                
+                                progressBar.value = percent;
+                                status.innerHTML = '上传进度：' + percent.toFixed(1) + '%';
 
-                        progressBar.value = percent;
-                        status.innerHTML = '上传进度：' + percent.toFixed(1) + '%';
+                                if(speedInKBps >= 1024){
+                                    speedInKBps = uploadSpeed / (1024*1024);
+                                    status.innerHTML += '<br>速率: ' + speedInKBps.toFixed(3) + ' MB/s';
+                                }
+                                else{
+                                    status.innerHTML += '<br>速率: ' + speedInKBps.toFixed(3) + ' KB/s';
+                                }
 
-                        if(speedInKBps >= 1024){
-                            speedInKBps = uploadSpeed / (1024*1024);
-                            status.innerHTML += '<br>速率: ' + speedInKBps.toFixed(3) + ' MB/s';
-                        }
-                        else{
-                            status.innerHTML += '<br>速率: ' + speedInKBps.toFixed(3) + ' KB/s';
-                        }
+                                // 根据文件大小动态显示已上传大小和总大小
+                                var uploadedSize = formatBytes(e.loaded);
+                                var totalSize = formatBytes(e.total);
+                                status.innerHTML += '<br>已传/总量: ' + uploadedSize + ' / ' + totalSize;
+                            });
+                            //定义上传完成的处理 
+                            xhr.onload = function() {
+                                if (xhr.status === 200) {
+                                    status.innerHTML = '上传完成！';
+                                    setTimeout(function() {alert("上传成功"); location.reload();}, 250);  
+                                } else {
+                                    status.innerHTML = '上传出错，请重试。' + xhr.status;
+                                    progressBar.value = 0;
+                                }
+                                
+                                // 恢复所有按钮和文本输入框
+                                buttons.forEach(function(button) {
+                                    button.disabled = false;
+                                });
+                                // 恢复所有超链接
+                                links.forEach(function(link) {
+                                    link.setAttribute('href', '#'); // 或者设置正确的 href 属性
+                                    link.style.pointerEvents = 'auto'; // 恢复点击事件
+                                });
+                            };
 
-                        // 根据文件大小动态显示已上传大小和总大小
-                        var uploadedSize = formatBytes(e.loaded);
-                        var totalSize = formatBytes(e.total);
-                        status.innerHTML += '<br>已传/总量: ' + uploadedSize + ' / ' + totalSize;
-                    });
-
-                    // 辅助函数，将字节数转换为更友好的格式（KB、MB、GB）
-                    function formatBytes(bytes, decimals = 2) {
-                        if (bytes === 0) return '0 Bytes';
-                        const k = 1024;
-                        const dm = decimals < 0 ? 0 : decimals;
-                        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-                        const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-                        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-                    }
-
-                    xhr.onload = function() {
-                        if (xhr.status === 200) {
-                            status.innerHTML = '上传完成！';
+                            //设定使用 POST 方法发送数据到指定的服务器端脚本 upload.php 这个动作仅仅是设定了请求的目标和方式，并不会立即发送数据
+                            var startTime = new Date().getTime(); // 记录开始时间
+                            xhr.open("POST", "/upload.php");
+                            xhr.send(formData2);
+                            //---------------------------------------------------------------------------------
+                            //---------------------------------------------------------------------------------
                         } else {
-                            status.innerHTML = '上传出错，请重试。';
+                            alert(data.message);
                         }
-                    };
-
-                    var startTime = new Date().getTime(); // 记录开始时间
-                    xhr.open("POST", "upload.php");
-                    xhr.send(formData);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('出现错误，请稍后重试。');
+                    });
                 }
             }
+        }
+
+        // 辅助函数，将字节数转换为更友好的格式（KB、MB、GB）
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
         }
     </script>
 </body>
