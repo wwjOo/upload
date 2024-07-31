@@ -116,6 +116,64 @@
                 alert('出现错误，请稍后重试。');
             });
         }
+
+
+        // 获取编辑器元素
+        var editor = document.getElementById('editor');
+
+        // 监听键盘按下事件
+        editor.addEventListener('keydown', function(e) {
+            // 捕获按键事件
+            if (e.key === 'Tab') {
+                // 阻止默认行为（浏览器默认会切换焦点）
+                e.preventDefault();
+
+                // 在光标当前位置插入Tab字符（可以自定义Tab宽度）
+                var cursorPosition = getCaretPosition(editor);
+                var text = editor.innerText;
+                var newText = text.substring(0, cursorPosition) + '\t' + text.substring(cursorPosition);
+                editor.innerText = newText;
+
+                // 重新设置光标位置
+                setCaretPosition(editor, cursorPosition + 1);
+            }
+        });
+
+        // 获取光标位置
+        function getCaretPosition(element) {
+            var caretOffset = 0;
+            var doc = element.ownerDocument || element.document;
+            var win = doc.defaultView || doc.parentWindow;
+            var sel;
+            if (typeof win.getSelection != "undefined") {
+                sel = win.getSelection();
+                if (sel.rangeCount > 0) {
+                    var range = win.getSelection().getRangeAt(0);
+                    var preCaretRange = range.cloneRange();
+                    preCaretRange.selectNodeContents(element);
+                    preCaretRange.setEnd(range.endContainer, range.endOffset);
+                    caretOffset = preCaretRange.toString().length;
+                }
+            } else if ((sel = doc.selection) && sel.type != "Control") {
+                var textRange = sel.createRange();
+                var preCaretTextRange = doc.body.createTextRange();
+                preCaretTextRange.moveToElementText(element);
+                preCaretTextRange.setEndPoint("EndToEnd", textRange);
+                caretOffset = preCaretTextRange.text.length;
+            }
+            return caretOffset;
+        }
+
+        // 设置光标位置
+        function setCaretPosition(element, caretPos) {
+            var range = document.createRange();
+            var sel = window.getSelection();
+            range.setStart(element.childNodes[0], caretPos);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            element.focus();
+        }
     </script>
 </body>
 </html>
