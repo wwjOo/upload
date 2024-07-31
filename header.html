@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-        document.title = "welcome"; //页面标题设置
+        document.title = "Cloud Storage"; //页面标题设置
     </script>
     <style>
         /* 页面整体 */
         body {
             display: grid; /* 使用 grid 布局 */
-            padding-top: 25px;
+            padding-top: 15px;
             text-align: center;
             background-color: #ffffff;
+
+            grid-template-columns: auto; /* 一个自适应的列 */
+            grid-template-rows: auto; /* 自动调整行高 */
         }
 
         /* 标题 */
@@ -56,7 +59,7 @@
             margin: 10px 0; 
             border-radius: 5px; /* 边缘圆角 */
             text-align: center;
-            color: rgb(211, 16, 16);
+            color: rgb(2, 2, 2);
             background-color: #ffffff;
         }
         
@@ -134,9 +137,10 @@
     <!-- 放置隐藏信息 -->
     <div id="content" style="display:none;">
         <!-- 欢迎词 -->
-        <h1 id="h1">桃子湖云盘</h1>
-        <h3 id="h3"></h3>
+        <h1 id="h1">Cloud Storage</h1>
+        <h3 id="h3">Cur Path:   </h3>
     </div>
+    
     
     <!-- 添加删除按钮 -->
     <script>
@@ -153,7 +157,7 @@
                     if (fileName !== "Parent Directory") {
                         var deleteButton = document.createElement('button');
                         deleteButton.className = 'deleteButton';
-                        deleteButton.textContent = '删除';
+                        deleteButton.textContent = 'Delete';
 
                         // 在每行末尾插入一个新的单元格
                         var lastCell = rows[i].insertCell(-1);
@@ -179,7 +183,8 @@
                                 if (result) {
                                     //校验密码
                                     var form = new FormData();
-                                    form.append('password', password);            
+                                    form.append('password', password);    
+                                    form.append('passwordinfo', "delete");        
                                     form.append('rmfile', filename);
 
                                     fetch('/upload.php', {
@@ -258,8 +263,9 @@
         function showContent() {
             var contentDiv = document.getElementById('content');
             if (contentDiv) {
+                var textToAdd = window.location.href.replace(/(\?C=[A-Z];O=[A-Z])/, '').replace('http://124.223.4.37', '');
                 var paragraph = document.getElementById('h3');
-                paragraph.textContent += '当前路径:' + window.location.href.replace(/(\?C=[A-Z];O=[A-Z])/, '').replace('http://124.223.4.37', '');
+                paragraph.innerHTML += textToAdd
             }
 
             document.getElementById('passwordForm').style.display = 'none';
@@ -273,13 +279,14 @@
             var tables = document.getElementsByTagName('table');
             tables[0].style.display = 'none';
         }
-        //密码校验
+        //登录密码校验
         function checkPassword(event) {
             event.preventDefault();
             var password = document.getElementById('HTMLpassword').value;
             
             var signinform = new FormData();
-            signinform.append('password', password);  
+            signinform.append('password', password);   
+            signinform.append('passwordinfo', "signin");       
 
             fetch('/upload.php', {
                 method: 'POST',
@@ -299,6 +306,64 @@
                 console.error('Error:', error);
                 alert('出现错误，请稍后重试。');
             });
+        }
+    </script>
+
+    <!-- 点击主页链接时进行密码验证 -->
+    <script>
+        // 遍历每个链接，并为其添加点击事件监听器
+        document.addEventListener("DOMContentLoaded", function() {
+            var tableLinks = document.querySelectorAll("table a");
+
+            tableLinks.forEach(function(link) {
+                link.addEventListener("click", function(event) 
+                {
+                    var altText = this.parentNode.previousElementSibling.querySelector("img").getAttribute("alt");
+                    // 检查图标类型是否为 [DIR]
+                    if (altText === "[DIR]") 
+                    {
+                        event.preventDefault();                     // 阻止默认的链接跳转行为
+                        var targetUrl = this.getAttribute("href");  // 获取链接的目标URL
+                        checkPasswordAndRedirect(targetUrl);        // 调用密码验证函数
+                    }
+                });
+            });
+        });
+        function checkPasswordAndRedirect(targetUrl) {
+            var isAuthenticated = sessionStorage.getItem('fileAuthenticated'); 
+
+            if (isAuthenticated === 'true') 
+            {
+                window.location.href = targetUrl;
+            } 
+            else 
+            {
+                //校验密码
+                var password = prompt("请输入密码:");
+                if (password !== null && password !== ""){
+                    var form = new FormData();
+                    form.append('password', password);
+                    form.append('passwordinfo', "personal file");       
+
+                    fetch('/upload.php', {
+                        method: 'POST',
+                        body: form
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            window.location.href = targetUrl;
+                            sessionStorage.setItem('fileAuthenticated', 'true');
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('出现错误，请稍后重试。');
+                    });
+                }
+            }
         }
     </script>
 

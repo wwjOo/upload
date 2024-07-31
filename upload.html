@@ -81,8 +81,18 @@
             font-size: 12px;
             color: #d050d4; /* 设置字体颜色为白色 */
         }
+
+        #myFrame {
+            width: 100%;
+            height: 1000px;
+            border: 1px solid #ccc; /* 设置边框 */
+            border-radius: 8px; /* 设置圆角 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+            margin-bottom: 20px; /* 设置底部边距 */
+        }
     </style>
 
+    <!-- 表单 -->
     <form id="uploadForm" action="/upload.php" method="post" enctype="multipart/form-data">
         <hr>
         <div class="file-input-container">
@@ -99,14 +109,22 @@
             <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
             <div id="status"></div>
         </div>
-
-        <hr>
-        <button type="button" onclick="alert('你点错了!')">点小虫返回首页!</button>
-        <hr>
-        <a id="refresh" href="/">
-            <img src="/R-C.gif" style="max-width: 100%; height: auto;">
-        </a>
     </form>
+
+    <!-- 文件编辑 -->
+    <iframe id="myFrame" src="http://124.223.4.37/read.html"></iframe>
+    <script>
+        // 等待 iframe 加载完成后执行操作
+        document.getElementById('myFrame').addEventListener('load', function() {
+            var iframeDocument = document.getElementById('myFrame').contentDocument || document.getElementById('myFrame').contentWindow.document;
+            var filePathInput = iframeDocument.getElementById('filePathInput');
+            if (filePathInput) {
+                filePathInput.value = window.location.href.replace('http://124.223.4.37', '');
+            } else {
+                console.error('Element with id "filePathInput" not found inside iframe.');
+            }
+        });
+    </script>
 
     <!-- 处理路径输入 -->
     <script>
@@ -144,7 +162,8 @@
                     
                     //校验密码和路径
                     var formData1 = new FormData();
-                    formData1.append('password', password);            
+                    formData1.append('password', password);    
+                    formData1.append('passwordinfo', "upload");           
                     formData1.append('filepath', document.getElementById('inputText').value);
                     fetch('/upload.php', {
                         method: 'POST',

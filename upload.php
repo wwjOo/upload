@@ -1,62 +1,72 @@
 
 <?php
-// 检查密码是否正确
-$publicUserPassword = "1234";
-$supperUserPassword = "0000";
-$defalutDir = "/home/ubuntu/files";
-$linkHeadName = "header.html";
-$linkReadmeName = "upload.html";
 
-//删除文件夹函数
-function deleteDirectory($dir_path) {
-    if (!is_dir($dir_path)) {
-        return false;
-    }
+$defalutDir = "/home/ubuntu/files"; //网页根目录
+$linkHeadName = "header.html";      //网页头部装饰
+$linkReadmeName = "upload.html";    //网页尾部装饰
 
-    $files = array_diff(scandir($dir_path), array('.', '..'));
+$supperUserPassword = "12344321n";  //超级密码 - 最高权限
+$VisitPassword = "1234";            //访问密码 - 仅可访问下载
+$UserPasswords = array(             //用户密码 
+    "wwj", 
+    "cpf", 
+    "lcx", 
+    "lxq",
+    "yyds"
+);
 
-    foreach ($files as $file) {
-        $path = $dir_path . '/' . $file;
-
-        if (is_dir($path)) {
-            deleteDirectory($path);
-        } else {
-            unlink($path);
-        }
-    }
-
-    return rmdir($dir_path);
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') 
 {
-    //密码校验
-    if(isset($_POST['password']))
-    {
-        $password = $_POST['password'];
-        
-        // 检查密码是否正确
-        if ($password !== $publicUserPassword && $password !== $supperUserPassword) {
-            $response = array('status' => 'failed', 'message' => '权限验证失败');
+    //保存文件
+    if (isset($_POST['content']) && isset($_POST['filepath'])) {
+        $content = $_POST['content'];
+        $filepath = $defalutDir . "/" . $_POST['filepath'];
+    
+        // 将内容写入文件
+        if (file_put_contents($filepath, $content) !== false) {
+            $response = array('status' => 'failed', 'message' => '保存成功!');
+            echo json_encode($response);
+        } else {
+            $response = array('status' => 'failed', 'message' => '保存文件时出现错误');
             echo json_encode($response);
         }
-        // 密码正确后检查路径是否正确
-        else if(isset($_POST['filepath'])) {
-            $filepath = parse_url($_POST['filepath'], PHP_URL_PATH); //解析为相对ip地址的路径
 
-            $message = "权限验证通过\n";
-            $status = "success";
 
-            // 确保路径末尾有斜杠
-            if (substr($filepath, -1) !== '/') {
-                $filepath .= '/';
-            }
-            // 检查目录是否存在
-            $targetDir = $defalutDir . $filepath;
-            if (!is_dir($targetDir))
+    }
+
+    //密码校验
+    if(isset($_POST['password']) && $_POST['passwordinfo'])
+    {
+        $password = $_POST['password'];
+        $passwordinfo = $_POST['passwordinfo'];
+        
+        // 无效密码
+        if ($password !== $VisitPassword && $password !== $supperUserPassword && !in_array($password, $UserPasswords)) {
+            $response = array('status' => 'failed', 'message' => '权限验证失败');
+            echo json_encode($response);
+            exit(0);
+        }
+
+        //上传文件验证(超级用户 + 普通用户)
+        if($passwordinfo === "upload" && isset($_POST['filepath'])) 
+        {
+            if($password === $supperUserPassword || in_array($password, $UserPasswords))
             {
-                //超级用户可创建目录和软链接
-                if($password === $supperUserPassword) {
+                $filepath = parse_url($_POST['filepath'], PHP_URL_PATH); //解析为相对ip地址的路径
+                
+                $message = "权限验证通过\n";
+                $status = "success";
+
+                // 确保路径末尾有斜杠
+                if (substr($filepath, -1) !== '/') {
+                    $filepath .= '/';
+                }
+                // 检查目录是否存在
+                $targetDir = $defalutDir . $filepath;
+                if (!is_dir($targetDir))
+                {
+                    // TODO递归创建和链接
                     $message .= "创建新目录:" . $filepath . "\n";
                     mkdir($targetDir, 0755, true);
 
@@ -80,18 +90,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                         $status = "failed";
                     }
                 }
-                else {
-                    $message .= "目录不存在或无法访问:" . $filepath . "\n";
-                    $status = "failed";
-                }
+                $response = array('status' => $status, 'message' => $message, 'targetDir' => $targetDir);
+                echo json_encode($response);
             }
-            $response = array('status' => $status, 'message' => $message, 'targetDir' => $targetDir);
-            echo json_encode($response);
+            else
+            {
+                $response = array('status' => 'failed', 'message' => '您没有上传权限');
+                echo json_encode($response);
+            }
         }
-        //执行删除文件操作
-        else if(isset($_POST['rmfile']))
+
+        //删除文件(夹)验证(超级用户 + 普通用户)
+        else if($passwordinfo === "delete" && isset($_POST['rmfile']))
         {
-            if($password === $supperUserPassword) {
+            if($password === $supperUserPassword || in_array($password, $UserPasswords)) 
+            {
                 $name = $defalutDir . $_POST['rmfile'];
                 $message = "";
                 $status = "success";
@@ -124,13 +137,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 $response = array('status' => $status, 'message' => $message);
                 echo json_encode($response);
             }
-            else{
-                $response = array('status' => 'success', 'message' => '您没有删除权限');
+            else
+            {
+                $response = array('status' => 'false', 'message' => '您没有删除权限');
                 echo json_encode($response);
             }
         }
-        // 仅需验证密码且正确
-        else{
+
+        //访问用户文件夹(超级用户 + 普通用户)
+        else if($passwordinfo === "personal file")
+        {
+            if($password === $supperUserPassword || in_array($password, $UserPasswords)) 
+            {
+                $response = array('status' => 'success', 'message' => '权限验证通过');
+                echo json_encode($response);
+            }
+            else{
+                $response = array('status' => 'false', 'message' => '您没有访问权限');
+                echo json_encode($response);
+            }
+        }
+        
+        // 访问用户(超级用户 + 普通用户 + 访客)
+        else if($passwordinfo === "signin")
+        {
             $response = array('status' => 'success', 'message' => '权限验证通过');
             echo json_encode($response);
         }
@@ -176,8 +206,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         }
     }
 
-
-
     // elseif(isset($_POST['userInput'])){ // 检查是否接收到名为 "userInput" 的表单字段
     //     HandleTest();
     // } 
@@ -188,6 +216,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     //     echo "<p>get file</p>";
     // }
 }
+
+//递归创建文件夹和链接操作
+function createDirectory($sourceDir, $targetDir, $defalutDir, $linkHeadName, $linkReadmeName, &$message, &$status) {
+    // 创建目标目录
+    if (!is_dir($targetDir)) 
+    {
+        if (!mkdir($targetDir, 0755, true)) 
+        {
+            $message .= "无法创建新目录:" . $targetDir . "\n";
+            $status = "failed";
+            return;
+        } else 
+        {
+            $message .= "创建新目录:" . $targetDir . "\n";
+        }
+    }
+
+    // 扫描源目录
+    $files = scandir($sourceDir);
+    foreach ($files as $file) {
+        if ($file == '.' || $file == '..') {
+            continue;
+        }
+        $sourceFile = $sourceDir . '/' . $file;
+        $targetFile = $targetDir . '/' . $file;
+
+        if (is_dir($sourceFile)) {
+            // 递归处理子目录
+            createDirectory($sourceFile, $targetFile, $defalutDir, $linkHeadName, $linkReadmeName, $message, $status);
+        } else {
+            // 创建软链接
+            if (symlink($sourceFile, $targetFile)) {
+                $message .= "创建软链接成功: $sourceFile -> $targetFile\n";
+            } else {
+                $message .= "无法创建软链接: $sourceFile -> $targetFile\n";
+                $status = "failed";
+            }
+        }
+    }
+}
+
+//删除文件夹函数
+function deleteDirectory($dir_path) {
+    if (!is_dir($dir_path)) {
+        return false;
+    }
+    $files = array_diff(scandir($dir_path), array('.', '..'));
+    foreach ($files as $file) {
+        $path = $dir_path . '/' . $file;
+
+        if (is_dir($path)) {
+            deleteDirectory($path);
+        } else {
+            unlink($path);
+        }
+    }
+
+    return rmdir($dir_path);
+}
+
 
 // function HandleContent()
 // {
