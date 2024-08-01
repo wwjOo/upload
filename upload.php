@@ -12,7 +12,8 @@ $UserPasswords = array(             //用户密码
     "cpf", 
     "lcx", 
     "lxq",
-    "yyds"
+    "yyds",
+    "jgl"
 );
 
 

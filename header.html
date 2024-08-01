@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-        document.title = "Cloud Storage"; //页面标题设置
+        document.title = "Cloud Storage";
     </script>
     <style>
         /* 页面整体 */
@@ -14,11 +14,11 @@
             text-align: center;
             background-color: #ffffff;
 
-            grid-template-columns: auto; /* 一个自适应的列 */
-            grid-template-rows: auto; /* 自动调整行高 */
+            grid-template-columns: auto; /* 一�?�?适应的列 */ 
+            grid-template-rows: auto; /* �?动调整�?�高 */
         }
 
-        /* 标题 */
+        /* 标�?? */
         h1 {
             font-family: 'Montserrat', sans-serif; /* 使用Montserrat字体 */
             font-size: 3em; /* 调整字体大小 */
@@ -26,13 +26,13 @@
             color: #333; /* 设定文本颜色 */
             text-align: center; /* 居中文本 */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* 添加文本阴影效果 */
-            /* 其他样式，如背景色等 */
-            border-radius: 5px; /* 边缘圆角 */
+            /* 其他样式，�?�背�?色等 */
+            border-radius: 5px; /* 边缘圆�?? */
             background-color: #4CAF50;
-            transition: color 1s ease, background-color 1s ease; /* 添加过渡效果 0.3s 调用ease函数执行过渡 */
+            transition: color 1s ease, background-color 1s ease; /* 添加过渡效果 0.3s 调用ease函数执�?�过�? */
         }
-        h1:hover { /* 设置按钮在鼠标悬停时的效果 */
-            background-color: #e3ffe3; /* 改变背景色 */
+        h1:hover { /* 设置按钮在鼠标悬停时的效�? */
+            background-color: #e3ffe3; /* 改变背景�? */
             color: #439e46;
         }
         h3 {
@@ -42,13 +42,13 @@
             color: #333; /* 设定文本颜色 */
             text-align: center; /* 居中文本 */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* 添加文本阴影效果 */
-            /* 其他样式，如背景色等 */
-            border-radius: 5px; /* 边缘圆角 */
+            /* 其他样式，�?�背�?色等 */
+            border-radius: 5px; /* 边缘圆�?? */
             background-color: #4CAF50;
-            transition: color 1s ease, background-color 1s ease; /* 添加过渡效果 0.3s 调用ease函数执行过渡 */
+            transition: color 1s ease, background-color 1s ease; /* 添加过渡效果 0.3s 调用ease函数执�?�过�? */
         }
-        h3:hover { /* 设置按钮在鼠标悬停时的效果 */
-            background-color: #e3ffe3; /* 改变背景色 */
+        h3:hover { /* 设置按钮在鼠标悬停时的效�? */
+            background-color: #e3ffe3; /* 改变背景�? */
             color: #439e46;
         }
         
@@ -57,26 +57,26 @@
             width: 100%; /* 宽度 */   
             padding: 10px; /* 厚度 */
             margin: 10px 0; 
-            border-radius: 5px; /* 边缘圆角 */
+            border-radius: 5px; /* 边缘圆�?? */
             text-align: center;
             color: rgb(2, 2, 2);
             background-color: #ffffff;
         }
         
-        /* 密码确认按钮 */
+        /* 密码�?认按�? */
         button {
             width: 100%;
             padding: 20px;
             margin: 0 0;
-            border: none; /* 无边框 */
-            border-radius: 5px; /* 边缘圆角 */
-            cursor: pointer; /* 鼠标停留时变形 */
+            border: none; /* 无边�? */
+            border-radius: 5px; /* 边缘圆�?? */
+            cursor: pointer; /* 鼠标停留时变�? */
             color: #ffffff;
             background-color: #4CAF50;
-            transition: color 1s ease, background-color 1s ease; /* 添加过渡效果 0.3s 调用ease函数执行过渡 */
+            transition: color 1s ease, background-color 1s ease; /* 添加过渡效果 0.3s 调用ease函数执�?�过�? */
         }
-        button:hover { /* 设置按钮在鼠标悬停时的效果 */
-            background-color: #e3ffe3; /* 改变背景色 */
+        button:hover { /* 设置按钮在鼠标悬停时的效�? */
+            background-color: #e3ffe3; /* 改变背景�? */
             color: #439e46;
         }
 
@@ -84,43 +84,43 @@
             width: 100%;
             padding: 10px;
             margin: 0 0;
-            border: none; /* 无边框 */
-            border-radius: 5px; /* 边缘圆角 */
-            cursor: pointer; /* 鼠标停留时变形 */
+            border: none; /* 无边�? */
+            border-radius: 5px; /* 边缘圆�?? */
+            cursor: pointer; /* 鼠标停留时变�? */
             color: #ffffff;
             background-color: #4c82af;
-            transition: color 1s ease, background-color 1s ease; /* 添加过渡效果 0.3s 调用ease函数执行过渡 */
+            transition: color 1s ease, background-color 1s ease; /* 添加过渡效果 0.3s 调用ease函数执�?�过�? */
         }
         .deleteButton:hover {
-            background-color: #b2f0ff; /* 改变背景色 */
+            background-color: #b2f0ff; /* 改变背景�? */
             color: #4c82af;
         }
         
         /* 表格 */
         table {
             width: 100%; /* 表格宽度100% */
-            border-collapse: collapse; /* 边框重叠处理 */
-            border: 1px solid #dddddd; /* 表格整体边框 */
-            background-color: #e9ecef; /* 鼠标悬停时背景色 */
+            border-collapse: collapse; /* 边�?�重叠�?�理 */
+            border: 1px solid #dddddd; /* 表格整体边�?? */
+            background-color: #e9ecef; /* 鼠标�?停时背景�? */
         }
         table th, table td {
-            border: 1px solid #dddddd;  /* 表头，单元格边框 */
-            padding: 8px;   /* 表头，单元格内边距 */
+            border: 1px solid #dddddd;  /* 表头，单元格边�?? */
+            padding: 8px;   /* 表头，单元格内边�? */
             text-align: center; /* 文本居中 */
         }
         table th {
-            background-color: #f2f2f2; /* 表头背景色 */
+            background-color: #f2f2f2; /* 表头背景�? */
         }
         table tr:nth-child(even) {
-            background-color: #d6d6d681; /* 隔行变色 */
+            background-color: #d6d6d681; /* 隔�?�变�? */
             transition: background-color 1s ease;
         }
         table tr:nth-child(odd) {
-            background-color: #f9f9f9; /* 隔行变色 */
+            background-color: #f9f9f9; /* 隔�?�变�? */
             transition: background-color 1s ease;
         }
         table tr:hover {
-            background-color: #4095e9bb; /* 鼠标悬停时背景色 */
+            background-color: #4095e9bb; /* 鼠标�?停时背景�? */
         }
     </style>
 </head>
@@ -136,7 +136,7 @@
     
     <!-- 放置隐藏信息 -->
     <div id="content" style="display:none;">
-        <!-- 欢迎词 -->
+        <!-- 欢迎�? -->
         <h1 id="h1">Cloud Storage</h1>
         <h3 id="h3">Cur Path:   </h3>
     </div>
@@ -149,37 +149,37 @@
             if (tables.length > 0) {
                 var rows = tables[0].getElementsByTagName('tr');
                 for (var i = 2; i < rows.length - 1; i++) {
-                    // 获取每行文件(夹)名称
+                    // 获取每�?�文�?(�?)名称
                     var fileNameCell = rows[i].getElementsByTagName('td')[1];
                     var fileName = fileNameCell.textContent.trim();
 
-                    // 排除文件名为 "Parent Directory" 的行
+                    // 排除文件名为 "Parent Directory" 的�??
                     if (fileName !== "Parent Directory") {
                         var deleteButton = document.createElement('button');
                         deleteButton.className = 'deleteButton';
                         deleteButton.textContent = 'Delete';
 
-                        // 在每行末尾插入一个新的单元格
+                        // 在每行末尾插入一�?新的单元�?
                         var lastCell = rows[i].insertCell(-1);
                         lastCell.appendChild(deleteButton);
 
                         deleteButton.addEventListener('click', function() {
-                            var currentRow = this.parentNode.parentNode;    // 获取按钮的父元素（单元格），再获取父元素的父元素（行）
-                            var filenameCell = currentRow.cells[1];         // 第二列是文件名所在的单元格
-                            var filename = filenameCell.textContent.trim(); // 获取文件名文本并去除首尾空格
+                            var currentRow = this.parentNode.parentNode;    // 获取按钮的父元素（单元格），再获取父元素的父元素（�?�）
+                            var filenameCell = currentRow.cells[1];         // �?二列�?文件名所在的单元�?
+                            var filename = filenameCell.textContent.trim(); // 获取文件名文�?并去除�?�尾空格
 
                             filename = window.location.href + filename;
                             filename = filename.replace('http://124.223.4.37', '');
                             filename = filename.replace(/(\?C=[A-Z];O=[A-Z])/, '');
 
-                            console.log('要删除的文件名:', filename);
+                            console.log('要删除的文件�?:', filename);
 
-                            // 弹出对话框要求用户输入密码
-                            var password = prompt("请输入密码:");
+                            // 弹出对话框�?�求用户输入密码
+                            var password = prompt("请输入密�?:");
                             if (password !== null && password !== ""){
-                                var result = confirm("即将删除文件(夹):\n" + filename + "\n您确定要继续吗?");
+                                var result = confirm("即将删除文件(�?):\n" + filename + "\n您确定�?�继�?�??");
 
-                                //确认
+                                //�?�?
                                 if (result) {
                                     //校验密码
                                     var form = new FormData();
@@ -196,15 +196,15 @@
                                         if (data.status === 'success') {
                                             alert(data.message);
                                             
-                                            // 删除文件所在的行
-                                            currentRow.parentNode.removeChild(currentRow); // 从 DOM 中移除行
+                                            // 删除文件所在的�?
+                                            currentRow.parentNode.removeChild(currentRow); // �? DOM �?移除�?
                                         } else {
                                             alert(data.message);
                                         }
                                     })
                                     .catch(error => {
                                         console.error('Error:', error);
-                                        alert('出现错误，请稍后重试。');
+                                        alert('出现错�??，�?�稍后重试�?');
                                     });
                                 }
                             }
@@ -218,16 +218,16 @@
     <script>
         //backspace按键控制返回
         document.addEventListener('keydown', function(event) {
-            if (event.keyCode === 8) {// Backspace键
+            if (event.keyCode === 8) {// Backspace�?
 
-                //是否正在输入内容
+                //�?否�?�在输入内�??
                 var activeElement = document.activeElement;
                 var sensitiveInputTypes = ['password', 'text'];
                 if (activeElement && activeElement.type && sensitiveInputTypes.includes(activeElement.type.toLowerCase())) {
                     return;
                 }
 
-                //是否有Parent Directory
+                //�?否有Parent Directory
                 var tables = document.getElementsByTagName('table');
                 var parentDirectoryLink = tables[0].querySelector('tr:nth-child(3) td:nth-child(2) a');
                 if (parentDirectoryLink && parentDirectoryLink.textContent.trim() === "Parent Directory") {
@@ -236,21 +236,21 @@
                 }
             }
         });
-        //点击空白处切换聚焦位置
+        //点击空白处切换聚焦位�?
         document.addEventListener('click', function(event) {
             var container = document.getElementById('focusContainer');
             if (container) {
                 var inputField = container.querySelector('.input-field');
                 if (!container.contains(event.target)) {
-                    // 检查输入框是否存在
+                    // 检查输入�?�是否存�?
                     if (inputField) {
-                        // 如果在外部点击，取消输入框的焦点
+                        // 如果在�?�部点击，取消输入�?�的焦点
                         inputField.blur();
                     }
                 }
             }
         });
-        //查看浏览器密码缓存以决定是否通过校验
+        //查看浏�?�器密码缓存以决定是否通过校验
         window.onload = function() {
             var isAuthenticated = sessionStorage.getItem('authenticated'); 
             if (isAuthenticated === 'true') {
@@ -259,7 +259,7 @@
                 hideContent();
             }
         };
-        //隐藏与显示
+        //隐藏与显�?
         function showContent() {
             var contentDiv = document.getElementById('content');
             if (contentDiv) {
@@ -295,7 +295,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    sessionStorage.setItem('authenticated', 'true'); //缓存密码到浏览器，避免每次刷新都要输入
+                    sessionStorage.setItem('authenticated', 'true'); //缓存密码到浏览器，避免每次刷新都要输�?
                     showContent();
                 } else {
                     document.getElementById('HTMLpassword').value = '';
@@ -304,14 +304,14 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('出现错误，请稍后重试。');
+                alert('出现错�??，�?�稍后重试�?');
             });
         }
     </script>
 
-    <!-- 点击主页链接时进行密码验证 -->
+    <!-- 点击主页链接时进行密码验�? -->
     <script>
-        // 遍历每个链接，并为其添加点击事件监听器
+        // 遍历每个链接，并为其添加点击事件监听�?
         document.addEventListener("DOMContentLoaded", function() {
             var tableLinks = document.querySelectorAll("table a");
 
@@ -322,7 +322,7 @@
                     // 检查图标类型是否为 [DIR]
                     if (altText === "[DIR]") 
                     {
-                        event.preventDefault();                     // 阻止默认的链接跳转行为
+                        event.preventDefault();                     // 阻�?�默认的链接跳转行为
                         var targetUrl = this.getAttribute("href");  // 获取链接的目标URL
                         checkPasswordAndRedirect(targetUrl);        // 调用密码验证函数
                     }
@@ -339,7 +339,7 @@
             else 
             {
                 //校验密码
-                var password = prompt("请输入密码:");
+                var password = prompt("请输入密�?:");
                 if (password !== null && password !== ""){
                     var form = new FormData();
                     form.append('password', password);
@@ -360,7 +360,7 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('出现错误，请稍后重试。');
+                        alert('出现错�??，�?�稍后重试�?');
                     });
                 }
             }

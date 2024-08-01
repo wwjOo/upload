@@ -92,37 +92,70 @@
         }
     </style>
 
-    <!-- 表单 -->
-    <form id="uploadForm" action="/upload.php" method="post" enctype="multipart/form-data">
-        <hr>
-        <div class="file-input-container">
-            <input type="file" name="file" id="file">
-            <br>
-            <label for="inputText">请输入存储路径:</label>
-            <input type="text" id="inputText" name="userInput" required class="default-text">
-            <script>
-                document.getElementById('inputText').value = window.location.href.replace(/(\?C=[A-Z];O=[A-Z])/, '').replace('http://124.223.4.37', '');
-            </script>
-            <br>
-            <input type="submit" value="点击上传" onclick="uploadFile(event)">
-            <br>        
-            <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
-            <div id="status"></div>
-        </div>
-    </form>
+    <div id="tail" style="display:none;">
+        <!-- 表单 -->
+        <form id="uploadForm" action="/upload.php" method="post" enctype="multipart/form-data">
+            <hr>
+            <div class="file-input-container">
+                <input type="file" name="file" id="file">
+                <br>
+                <label for="inputText">请输入存储路径:</label>
+                <input type="text" id="inputText" name="userInput" required class="default-text">
+                <script>
+                    document.getElementById('inputText').value = window.location.href.replace(/(\?C=[A-Z];O=[A-Z])/, '').replace('http://124.223.4.37', '');
+                </script>
+                <br>
+                <input type="submit" value="点击上传" onclick="uploadFile(event)">
+                <br>        
+                <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
+                <div id="status"></div>
+            </div>
+        </form>
+        <!-- 文件编辑 -->
+        <iframe id="myFrame" src="http://124.223.4.37/read.html"></iframe>
+    </div>
 
-    <!-- 文件编辑 -->
-    <iframe id="myFrame" src="http://124.223.4.37/read.html"></iframe>
     <script>
         // 等待 iframe 加载完成后执行操作
         document.getElementById('myFrame').addEventListener('load', function() {
             var iframeDocument = document.getElementById('myFrame').contentDocument || document.getElementById('myFrame').contentWindow.document;
             var filePathInput = iframeDocument.getElementById('filePathInput');
             if (filePathInput) {
-                filePathInput.value = window.location.href.replace('http://124.223.4.37', '');
+                filePathInput.value = window.location.href.replace('http://124.223.4.37', '').replace(/(\?C=[A-Z];O=[A-Z])/, '')+"common.txt";
             } else {
                 console.error('Element with id "filePathInput" not found inside iframe.');
             }
+        });
+    </script>
+
+    <script>
+        // 监视表格是否显示的函数
+        function monitorTableVisibility() {
+            var table = document.getElementsByTagName('table')[0];
+            
+            // 使用MutationObserver API来监视表格的显示状态
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        if (table.style.display === 'none') {
+                            document.getElementById('tail').style.display = 'none';
+                        } else {
+                            document.getElementById('tail').style.display = 'block';
+                        }
+                    }
+                });
+            });
+            
+            // 配置MutationObserver以监视style属性的更改
+            var config = { attributes: true, attributeFilter: ['style'] };
+            
+            // 启动MutationObserver
+            observer.observe(table, config);
+        }
+        
+        // 页面加载完毕时调用监视函数
+        document.addEventListener('DOMContentLoaded', function() {
+            monitorTableVisibility();
         });
     </script>
 
